@@ -2,19 +2,36 @@
 
 namespace App\Entity;
 
+use App\Repository\PostRepository;
+use DateTime;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer")]
     private int $id;
-    private string $text;
-    private string $writer;
-    private \DateTime $publishedOn;
 
-    public function __construct(int $id, string $text, string $writer, \DateTime $publishedOn)
+    #[ORM\Column(type: "string", length: 50)]
+    private string $title;
+
+    #[ORM\Column(type: "string")]
+    private string $text;
+
+    #[ORM\ManyToOne(targetEntity: Member::class, inversedBy: "posts")]
+    private Member $writer;
+
+    #[ORM\Column(type: "datetime")]
+    private DateTime $publishedOn;
+
+    public function __construct(string $title, string $text, Member $writer)
     {
-        $this->id = $id;
+        $this->title = $title;
         $this->text = $text;
         $this->writer = $writer;
-        $this->publishedOn = $publishedOn;
+        $this->publishedOn = new DateTime();
     }
 
     /**
@@ -36,6 +53,22 @@ class Post
     /**
      * @return string
      */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @return string
+     */
     public function getText(): string
     {
         return $this->text;
@@ -49,34 +82,23 @@ class Post
         $this->text = $text;
     }
 
-    /**
-     * @return string
-     */
-    public function getWriter(): string
+    public function getWriter(): Member
     {
         return $this->writer;
     }
 
     /**
-     * @param string $writer
+     * @return DateTime
      */
-    public function setWriter(string $writer): void
-    {
-        $this->writer = $writer;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getPublishedOn(): \DateTime
+    public function getPublishedOn(): DateTime
     {
         return $this->publishedOn;
     }
 
     /**
-     * @param \DateTime $publishedOn
+     * @param DateTime $publishedOn
      */
-    public function setPublishedOn(\DateTime $publishedOn): void
+    public function setPublishedOn(DateTime $publishedOn): void
     {
         $this->publishedOn = $publishedOn;
     }
